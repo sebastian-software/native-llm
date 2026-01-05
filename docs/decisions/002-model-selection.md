@@ -52,13 +52,17 @@ With access to 1000+ GGUF models, we needed to define:
 
 ## Removed Models & Rationale
 
-### MiniMax M2.1 (Removed 2026-01-05)
+### Resource-Prohibitive Models
 
-**Decision**: ❌ Removed
+These models exceed practical hardware limits for most developers:
 
-- 129GB download size - impractical for most users
-- Requires 140GB+ RAM to run
-- Qwen 2.5 Coder provides good coding alternative at 4.4GB
+| Model            | Download | RAM Required | Alternative          |
+| ---------------- | -------- | ------------ | -------------------- |
+| **MiniMax M2.1** | 129 GB   | ~140 GB      | Qwen 2.5 Coder (4GB) |
+| **GPT-OSS 120B** | ~80 GB   | ~90 GB       | GPT-OSS 20B (14GB)   |
+
+> 💡 Users with sufficient hardware can use custom model paths:
+> `new LLMEngine({ model: "/path/to/model.gguf" })`
 
 ### Llama 3.x (All variants)
 
@@ -97,12 +101,6 @@ With access to 1000+ GGUF models, we needed to define:
 
 - GGUF not yet available from reliable sources
 - Will add when community converts it
-
-### GPT-OSS 120B
-
-**Decision**: ❌ Removed
-
-- Requires 80GB RAM - impractical for most users
 
 ## Key Decisions
 
