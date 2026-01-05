@@ -56,8 +56,7 @@ hard parts:**
 | -------------------------- | ----------------------- |
 | Find GGUF model URLs       | `model: "gemma"`        |
 | Configure HuggingFace auth | Auto from `HF_TOKEN`    |
-| 20+ lines of setup         | 3 lines                 |
-| Handle Qwen3 thinking mode | Automatic               |
+| 20+ lines boilerplate      | 3 lines                 |
 | Research model benchmarks  | Curated recommendations |
 
 ### Local vs Cloud
