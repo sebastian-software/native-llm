@@ -1,0 +1,92 @@
+{
+  "name": "native-llm",
+  "version": "0.1.0",
+  "description": "High-performance LLM inference in Node.js",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "tsx scripts/test-e2e.ts",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist coverage",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "node-llama-cpp": "^3.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.8.0",
+    "typescript-eslint": "^8.52.0",
+    "vitest": "^4.0.16"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "keywords": [
+    "llm",
+    "llama",
+    "llama.cpp",
+    "local-ai",
+    "apple-silicon",
+    "metal",
+    "gpu",
+    "text-generation",
+    "gemma",
+    "qwen",
+    "phi",
+    "deepseek",
+    "ai",
+    "inference",
+    "native"
+  ],
+  "license": "MIT",
+  "author": "Sebastian Software GmbH",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sebastian-software/native-llm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sebastian-software/native-llm/issues"
+  },
+  "homepage": "https://github.com/sebastian-software/native-llm#readme"
+}

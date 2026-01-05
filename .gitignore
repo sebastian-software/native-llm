@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+
+# Build outputs
+dist/
+*.tsbuildinfo
+
+# Native build
+native/.build/
+native/.swiftpm/
+
+# Models (large files, download separately)
+models/
+
+# IDE
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
