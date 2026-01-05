@@ -81,6 +81,18 @@ pnpm benchmark gemma-3n-e4b phi-4 # Test specific models
 **Benchmarks**: MMLU = general knowledge, GPQA = PhD-level science, SWE = coding tasks, Arena =
 human preference
 
+### Models Not Included
+
+Some models are excluded due to impractical resource requirements:
+
+| Model            | Size   | RAM Required | Reason             |
+| ---------------- | ------ | ------------ | ------------------ |
+| **MiniMax M2.1** | 129 GB | ~140 GB      | Download too large |
+| **GPT-OSS 120B** | ~80 GB | ~90 GB       | RAM impractical    |
+
+> 💡 Use custom model paths if you have the hardware:
+> `new LLMEngine({ model: "/path/to/model.gguf" })`
+
 ### Why Gemma 3n?
 
 Gemma 3n uses **Matryoshka Transformer** architecture - more parameters compressed to less active
