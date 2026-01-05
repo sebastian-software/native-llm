@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <!-- Brain/chip shape -->
+  <rect x="20" y="20" width="80" height="80" rx="16" fill="url(#grad)"/>
+  <!-- Circuit lines -->
+  <path d="M35 60 H50 M70 60 H85" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <path d="M60 35 V50 M60 70 V85" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <!-- Center node -->
+  <circle cx="60" cy="60" r="12" fill="white"/>
+  <circle cx="60" cy="60" r="6" fill="url(#grad)"/>
+  <!-- Corner nodes -->
+  <circle cx="35" cy="35" r="4" fill="white" opacity="0.8"/>
+  <circle cx="85" cy="35" r="4" fill="white" opacity="0.8"/>
+  <circle cx="35" cy="85" r="4" fill="white" opacity="0.8"/>
+  <circle cx="85" cy="85" r="4" fill="white" opacity="0.8"/>
+</svg>
+
