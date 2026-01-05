@@ -34,7 +34,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist coverage",
+    "clean": "rm -rf dist coverage docs/api",
+    "docs": "typedoc",
     "release": "release-it",
     "prepare": "husky"
   },
@@ -54,6 +55,7 @@
     "release-it": "^19.2.2",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
+    "typedoc": "^0.28.15",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.52.0",
     "vitest": "^4.0.16"

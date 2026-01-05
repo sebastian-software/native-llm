@@ -123,6 +123,17 @@ export class LLMEngine {
 
   /**
    * Initialize the engine and load the model
+   *
+   * Downloads the model from HuggingFace if not cached locally.
+   * Uses Metal GPU acceleration on Apple Silicon.
+   *
+   * @throws Error if model download or loading fails
+   *
+   * @example
+   * ```typescript
+   * const engine = new LLMEngine({ model: "gemma-3n-e4b" })
+   * await engine.initialize()
+   * ```
    */
   async initialize(): Promise<void> {
     if (this.model) {
@@ -169,6 +180,23 @@ export class LLMEngine {
 
   /**
    * Generate text from a prompt
+   *
+   * Automatically initializes the engine if not already done.
+   * For thinking-mode models (Qwen3, DeepSeek), applies appropriate settings.
+   *
+   * @param options - Generation options including prompt, maxTokens, temperature
+   * @returns Generation result with text, token counts, and performance metrics
+   *
+   * @example
+   * ```typescript
+   * const result = await engine.generate({
+   *   prompt: "Explain quantum computing",
+   *   maxTokens: 200,
+   *   temperature: 0.7
+   * })
+   * console.log(result.text)
+   * console.log(`${result.tokensPerSecond.toFixed(1)} tok/s`)
+   * ```
    */
   async generate(options: GenerateOptions): Promise<GenerateResult> {
     if (!this.session || !this.context) {
@@ -219,7 +247,22 @@ export class LLMEngine {
   }
 
   /**
-   * Generate text with streaming
+   * Generate text with streaming token-by-token output
+   *
+   * Same as `generate()` but calls `onToken` for each generated token,
+   * enabling real-time display of responses.
+   *
+   * @param options - Generation options including prompt, maxTokens, temperature
+   * @param onToken - Callback invoked for each generated token
+   * @returns Generation result with text, token counts, and performance metrics
+   *
+   * @example
+   * ```typescript
+   * const result = await engine.generateStreaming(
+   *   { prompt: "Write a haiku" },
+   *   (token) => process.stdout.write(token)
+   * )
+   * ```
    */
   async generateStreaming(
     options: GenerateOptions,
@@ -272,7 +315,23 @@ export class LLMEngine {
   }
 
   /**
-   * Generate text with chat messages
+   * Generate text using chat message format
+   *
+   * Supports multi-turn conversations with system, user, and assistant messages.
+   * Automatically manages chat history within the session.
+   *
+   * @param messages - Array of chat messages with role and content
+   * @param options - Optional generation options (maxTokens, temperature, etc.)
+   * @returns Generation result with assistant's response
+   *
+   * @example
+   * ```typescript
+   * const result = await engine.chat([
+   *   { role: "system", content: "You are a helpful assistant." },
+   *   { role: "user", content: "What is 2+2?" }
+   * ])
+   * console.log(result.text) // "4"
+   * ```
    */
   async chat(
     messages: { role: "system" | "user" | "assistant"; content: string }[],
@@ -315,7 +374,12 @@ export class LLMEngine {
   }
 
   /**
-   * Get information about the loaded model
+   * Get information about the current model
+   *
+   * Returns model metadata including name, parameters, context length,
+   * supported languages, and benchmark scores.
+   *
+   * @returns Model information object
    */
   getModelInfo() {
     if (this.modelId in MODELS) {
@@ -334,7 +398,10 @@ export class LLMEngine {
   }
 
   /**
-   * Reset the chat session (clear history)
+   * Reset the chat session
+   *
+   * Clears all conversation history, starting fresh for new conversations.
+   * The model remains loaded; use `dispose()` to fully unload.
    */
   resetSession(): void {
     if (this.session) {
@@ -343,7 +410,21 @@ export class LLMEngine {
   }
 
   /**
-   * Clean up resources
+   * Clean up resources and unload the model
+   *
+   * Releases GPU memory and cleans up native resources.
+   * Call this when done with the engine to prevent memory leaks.
+   *
+   * @example
+   * ```typescript
+   * const engine = new LLMEngine({ model: "gemma-3n-e4b" })
+   * try {
+   *   await engine.initialize()
+   *   const result = await engine.generate({ prompt: "Hello" })
+   * } finally {
+   *   await engine.dispose()
+   * }
+   * ```
    */
   async dispose(): Promise<void> {
     if (this.context) {
