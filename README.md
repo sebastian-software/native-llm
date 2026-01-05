@@ -1,5 +1,11 @@
 # native-llm
 
+[![CI](https://github.com/sebastian-software/native-llm/actions/workflows/ci.yml/badge.svg)](https://github.com/sebastian-software/native-llm/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/sebastian-software/native-llm/graph/badge.svg)](https://codecov.io/gh/sebastian-software/native-llm)
+[![npm version](https://img.shields.io/npm/v/native-llm.svg)](https://www.npmjs.com/package/native-llm)
+[![npm downloads](https://img.shields.io/npm/dm/native-llm.svg)](https://www.npmjs.com/package/native-llm)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 > High-performance LLM inference in Node.js
 
 Local LLM inference using [llama.cpp](https://github.com/ggerganov/llama.cpp) with Metal GPU
