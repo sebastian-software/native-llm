@@ -5,7 +5,7 @@
 <h1 align="center">native-llm</h1>
 
 <p align="center">
-  <strong>Run AI models locally. No cloud. No limits. No cost.</strong>
+  <strong>The easiest way to run AI models locally.</strong>
 </p>
 
 <p align="center">
@@ -25,20 +25,6 @@
 
 ---
 
-## 🎯 Why native-llm?
-
-|             | ☁️ Cloud AI              | 🏠 native-llm        |
-| ----------- | ------------------------ | -------------------- |
-| **Cost**    | $0.001 - $0.10 per query | **Free forever**     |
-| **Speed**   | 1-20 seconds             | **< 100ms**          |
-| **Privacy** | Data sent to servers     | **100% local**       |
-| **Limits**  | Rate limits & quotas     | **Unlimited**        |
-| **Offline** | ❌ Requires internet     | ✅ **Works offline** |
-
-**The bottom line:** Local models now achieve **91% of GPT-5's quality** — at zero cost.
-
----
-
 ## 🚀 Quick Start
 
 ```bash
@@ -48,7 +34,6 @@ npm install native-llm
 ```typescript
 import { LLMEngine } from "native-llm"
 
-// That's it. One line to load a model.
 const engine = new LLMEngine({ model: "gemma" })
 
 const result = await engine.generate({
@@ -56,16 +41,64 @@ const result = await engine.generate({
 })
 
 console.log(result.text)
-// → "Imagine you have a magical coin that can be heads AND tails at the same time..."
 ```
 
-Models download automatically on first use. No setup. No configuration. Just works.
+**That's it.** Model downloads automatically. GPU detected automatically. Just works.
 
 ---
 
-## ⚡ Performance
+## 🎯 Why native-llm?
 
-Benchmarked on **Apple M1 Ultra** with Metal GPU acceleration:
+**A friendly wrapper around [llama.cpp](https://github.com/ggerganov/llama.cpp) that handles the
+hard parts:**
+
+| Without native-llm         | With native-llm         |
+| -------------------------- | ----------------------- |
+| Find GGUF model URLs       | `model: "gemma"`        |
+| Configure HuggingFace auth | Auto from `HF_TOKEN`    |
+| 20+ lines of setup         | 3 lines                 |
+| Handle Qwen3 thinking mode | Automatic               |
+| Research model benchmarks  | Curated recommendations |
+
+### Local vs Cloud
+
+|             | ☁️ Cloud AI              | 🏠 native-llm        |
+| ----------- | ------------------------ | -------------------- |
+| **Cost**    | $0.001 - $0.10 per query | **Free forever**     |
+| **Speed**   | 1-20 seconds             | **< 100ms**          |
+| **Privacy** | Data sent to servers     | **100% local**       |
+| **Limits**  | Rate limits & quotas     | **Unlimited**        |
+| **Offline** | ❌ Requires internet     | ✅ **Works offline** |
+
+---
+
+## 🎨 Models
+
+### Simple Aliases
+
+```typescript
+new LLMEngine({ model: "gemma" }) // Best balance (default)
+new LLMEngine({ model: "gemma-fast" }) // Maximum speed
+new LLMEngine({ model: "qwen-coder" }) // Code generation
+new LLMEngine({ model: "deepseek" }) // Complex reasoning
+```
+
+### Smart Recommendations
+
+```typescript
+import { LLMEngine } from "native-llm"
+
+// Get the right model for your use case
+const model = LLMEngine.getModelForUseCase("code") // → qwen-2.5-coder-7b
+const model = LLMEngine.getModelForUseCase("fast") // → gemma-3n-e2b
+const model = LLMEngine.getModelForUseCase("quality") // → gemma-3-27b
+
+// List all available models
+const models = LLMEngine.listModels()
+// → [{ id: "gemma-3n-e4b", name: "Gemma 3n E4B", size: "5 GB", ... }, ...]
+```
+
+### Performance (M1 Ultra)
 
 | Model                 | Size  | Speed        | Best For          |
 | --------------------- | ----- | ------------ | ----------------- |
@@ -75,40 +108,19 @@ Benchmarked on **Apple M1 Ultra** with Metal GPU acceleration:
 | 🧠 **DeepSeek R1**    | 5 GB  | **9 tok/s**  | Complex reasoning |
 | 👑 **Gemma 3 27B**    | 18 GB | **5 tok/s**  | Maximum quality   |
 
-> 💡 **Our pick:** Start with `gemma-3n-e4b` — it's the sweet spot of quality and speed.
-
----
-
-## 🎨 Models
-
-Use simple aliases — we handle the rest:
-
-```typescript
-new LLMEngine({ model: "gemma" }) // Fast & efficient
-new LLMEngine({ model: "gemma-large" }) // Maximum quality
-new LLMEngine({ model: "qwen-coder" }) // Code generation
-new LLMEngine({ model: "deepseek" }) // Chain-of-thought reasoning
-new LLMEngine({ model: "phi" }) // STEM & science
-```
-
-Or use any of the **1000+ GGUF models** on HuggingFace:
-
-```typescript
-new LLMEngine({ model: "/path/to/any-model.gguf" })
-```
-
 ---
 
 ## ✨ Features
 
-| Feature               | Description                                                 |
-| --------------------- | ----------------------------------------------------------- |
-| 🔥 **Native Speed**   | Direct N-API bindings to llama.cpp — no subprocess overhead |
-| 🍎 **Metal GPU**      | Full Apple Silicon acceleration out of the box              |
-| 🖥️ **Cross-Platform** | macOS, Linux, Windows — CUDA support for NVIDIA             |
-| 📦 **Auto-Download**  | Models fetched from HuggingFace automatically               |
-| 🌊 **Streaming**      | Real-time token-by-token output                             |
-| 📝 **TypeScript**     | Full type definitions included                              |
+| Feature               | Description                                                |
+| --------------------- | ---------------------------------------------------------- |
+| 📦 **Zero Config**    | Models download automatically, GPU detected automatically  |
+| 🎯 **Smart Defaults** | Curated models, sensible parameters, thinking-mode handled |
+| 🔥 **Native Speed**   | Direct llama.cpp bindings — no Python, no subprocess       |
+| 🍎 **Metal GPU**      | Full Apple Silicon acceleration out of the box             |
+| 🖥️ **Cross-Platform** | macOS, Linux, Windows with CUDA support                    |
+| 🌊 **Streaming**      | Real-time token-by-token output                            |
+| 📝 **TypeScript**     | Full type definitions included                             |
 
 ---
 
@@ -126,8 +138,8 @@ Get yours in 30 seconds: [huggingface.co/settings/tokens](https://huggingface.co
 
 ## 📚 Documentation
 
-**[→ Full Documentation](https://sebastian-software.github.io/native-llm/)** — Benchmarks, model
-comparison, streaming, chat API, and more.
+**[→ Full Documentation](https://sebastian-software.github.io/native-llm/)** — Streaming, chat API,
+custom models, and more.
 
 <p align="center">
   <strong>MIT License</strong> · Made with ❤️ by <a href="https://sebastian-software.de">Sebastian Software</a>

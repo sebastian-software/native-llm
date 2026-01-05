@@ -438,4 +438,62 @@ export class LLMEngine {
     this.session = null
     this.llama = null
   }
+
+  // ============================================
+  // Static Methods
+  // ============================================
+
+  /**
+   * List all available curated models
+   *
+   * @returns Array of model information objects
+   *
+   * @example
+   * ```typescript
+   * const models = LLMEngine.listModels()
+   * models.forEach(m => console.log(`${m.id}: ${m.name} (${m.parameters})`))
+   * ```
+   */
+  static listModels(): ({ id: string } & (typeof MODELS)[ModelId])[] {
+    return Object.entries(MODELS).map(([id, info]) => ({
+      id,
+      ...info
+    }))
+  }
+
+  /**
+   * Get recommended model for a specific use case
+   *
+   * @param useCase - One of: fast, balanced, quality, edge, multilingual, reasoning, code, longContext
+   * @returns Model ID string
+   *
+   * @example
+   * ```typescript
+   * const modelId = LLMEngine.getModelForUseCase("code")
+   * const engine = new LLMEngine({ model: modelId })
+   * ```
+   */
+  static getModelForUseCase(
+    useCase:
+      | "fast"
+      | "balanced"
+      | "quality"
+      | "edge"
+      | "multilingual"
+      | "reasoning"
+      | "code"
+      | "longContext"
+  ): ModelId {
+    const recommendations: Record<string, ModelId> = {
+      fast: "gemma-3n-e2b",
+      balanced: "gemma-3n-e4b",
+      quality: "gemma-3-27b",
+      edge: "gemma-3n-e2b",
+      multilingual: "qwen3-8b",
+      reasoning: "deepseek-r1-14b",
+      code: "qwen-2.5-coder-7b",
+      longContext: "gemma-3-27b"
+    }
+    return recommendations[useCase] ?? "gemma-3n-e4b"
+  }
 }

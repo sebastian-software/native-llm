@@ -329,4 +329,51 @@ describe("Model resolution", () => {
     const info = engine.getModelInfo()
     expect(info).toEqual(MODELS["qwen-2.5-coder-7b"])
   })
+
+  it("should have gemma-fast alias point to gemma-3n-e2b", () => {
+    const engine = new LLMEngine({ model: "gemma-fast" })
+    const info = engine.getModelInfo()
+    expect(info).toEqual(MODELS["gemma-3n-e2b"])
+  })
+})
+
+describe("Static methods", () => {
+  describe("listModels", () => {
+    it("should return all models", () => {
+      const models = LLMEngine.listModels()
+      expect(models.length).toBeGreaterThan(0)
+      expect(models[0]).toHaveProperty("id")
+      expect(models[0]).toHaveProperty("name")
+      expect(models[0]).toHaveProperty("repo")
+    })
+
+    it("should include gemma-3n-e4b", () => {
+      const models = LLMEngine.listModels()
+      const gemma = models.find((m) => m.id === "gemma-3n-e4b")
+      expect(gemma).toBeDefined()
+      expect(gemma?.name).toBe("Gemma 3n E4B")
+    })
+  })
+
+  describe("getModelForUseCase", () => {
+    it("should return gemma-3n-e2b for fast", () => {
+      expect(LLMEngine.getModelForUseCase("fast")).toBe("gemma-3n-e2b")
+    })
+
+    it("should return gemma-3n-e4b for balanced", () => {
+      expect(LLMEngine.getModelForUseCase("balanced")).toBe("gemma-3n-e4b")
+    })
+
+    it("should return qwen-2.5-coder-7b for code", () => {
+      expect(LLMEngine.getModelForUseCase("code")).toBe("qwen-2.5-coder-7b")
+    })
+
+    it("should return deepseek-r1-14b for reasoning", () => {
+      expect(LLMEngine.getModelForUseCase("reasoning")).toBe("deepseek-r1-14b")
+    })
+
+    it("should return gemma-3-27b for quality", () => {
+      expect(LLMEngine.getModelForUseCase("quality")).toBe("gemma-3-27b")
+    })
+  })
 })

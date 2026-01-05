@@ -187,6 +187,7 @@ export type ModelInfo = (typeof MODELS)[ModelId]
 export const MODEL_ALIASES: Record<string, ModelId> = {
   // Gemma
   gemma: "gemma-3n-e4b",
+  "gemma-fast": "gemma-3n-e2b",
   "gemma-large": "gemma-3-27b",
 
   // GPT-OSS (experimental)
