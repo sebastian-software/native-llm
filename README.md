@@ -129,19 +129,8 @@ Get yours in 30 seconds: [huggingface.co/settings/tokens](https://huggingface.co
 **[→ Full Documentation](https://sebastian-software.github.io/native-llm/)** — Benchmarks, model
 comparison, streaming, chat API, and more.
 
----
-
-## 💖 Credits
-
-Built on the shoulders of giants:
-
-- [llama.cpp](https://github.com/ggerganov/llama.cpp) — The inference engine that makes this
-  possible
-- [node-llama-cpp](https://github.com/withcatai/node-llama-cpp) — Excellent Node.js bindings
-- [bartowski](https://huggingface.co/bartowski) — High-quality GGUF quantizations
-
----
-
 <p align="center">
   <strong>MIT License</strong> · Made with ❤️ by <a href="https://sebastian-software.de">Sebastian Software</a>
+  <br/>
+  <sub>Powered by <a href="https://github.com/ggerganov/llama.cpp">llama.cpp</a> & <a href="https://github.com/withcatai/node-llama-cpp">node-llama-cpp</a></sub>
 </p>
