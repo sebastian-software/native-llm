@@ -1,7 +1,7 @@
 # ADR 002: Model Selection Strategy
 
-**Status**: Accepted (Updated 2026-01-05) **Date**: 2026-01-05 **Decision**: Focus on top-tier
-models only, prioritize quality over quantity
+**Status**: Updated **Date**: 2026-01-05 **Decision**: Focus on top-tier models only, prioritize
+quality over quantity
 
 ## Context
 
@@ -17,35 +17,48 @@ With access to 1000+ GGUF models, we needed to define:
 - **Efficiency**: Best quality per RAM/compute
 - **Practical deployment**: Models that run on typical hardware (8-64GB RAM)
 
-## Final Model Selection (12 Models)
+## Final Model Selection (11 Models)
 
 ### Tier 1: Recommended
 
-| Model               | Params    | RAM   | MMLU | Best For            |
-| ------------------- | --------- | ----- | ---- | ------------------- |
-| **Gemma 3n E4B**    | 8B→4B     | ~3GB  | 75%  | Default choice ⭐   |
-| **MiniMax M2.1**    | 45B (10B) | ~12GB | 82%  | Coding (73% SWE) 🏆 |
-| **Phi-4**           | 14B       | ~9GB  | 84%  | STEM/reasoning 🧠   |
-| **DeepSeek R1 14B** | 14B       | ~9GB  | 79%  | Chain-of-thought    |
+| Model               | Params | RAM  | MMLU | Best For          |
+| ------------------- | ------ | ---- | ---- | ----------------- |
+| **Gemma 3n E4B**    | 8B→4B  | ~5GB | 75%  | Default choice ⭐ |
+| **Phi-4**           | 14B    | ~9GB | 84%  | STEM/reasoning 🧠 |
+| **DeepSeek R1 14B** | 14B    | ~9GB | 79%  | Chain-of-thought  |
 
 ### Tier 2: Specialized
 
-| Model               | Params     | RAM    | MMLU   | Best For          |
-| ------------------- | ---------- | ------ | ------ | ----------------- |
-| **Gemma 3 27B**     | 27B        | ~18GB  | 77%    | Maximum quality   |
-| **GPT-OSS 20B**     | 21B (3.6B) | ~16GB  | 82%    | OpenAI open model |
-| **Qwen 2.5 7B/14B** | 7B/14B     | ~5-9GB | 74-79% | Multilingual      |
-| **Qwen 2.5 Coder**  | 7B         | ~5GB   | 66%    | Code generation   |
+| Model              | Params | RAM   | MMLU | Best For           |
+| ------------------ | ------ | ----- | ---- | ------------------ |
+| **Gemma 3 27B**    | 27B    | ~18GB | 77%  | Maximum quality    |
+| **Qwen3 8B**       | 8B     | ~5GB  | 81%  | Multilingual 🌍    |
+| **Qwen3 14B**      | 14B    | ~9GB  | 84%  | Top multilingual   |
+| **Qwen 2.5 Coder** | 7B     | ~5GB  | 66%  | Code generation 💻 |
 
 ### Tier 3: Efficient
 
 | Model              | Params | RAM  | MMLU | Best For       |
 | ------------------ | ------ | ---- | ---- | -------------- |
-| **Gemma 3n E2B**   | 5B→2B  | ~2GB | 64%  | Edge/mobile    |
+| **Gemma 3n E2B**   | 5B→2B  | ~3GB | 64%  | Edge/mobile 🚀 |
+| **Qwen3 4B**       | 4B     | ~3GB | 76%  | Fast thinking  |
 | **DeepSeek R1 7B** | 7B     | ~5GB | 72%  | Fast reasoning |
-| **GLM-4 9B**       | 9B     | ~6GB | 72%  | Multilingual   |
+
+### Tier 4: Experimental (Not Fully Working)
+
+| Model           | Params     | Status           | Issue                   |
+| --------------- | ---------- | ---------------- | ----------------------- |
+| **GPT-OSS 20B** | 21B (3.6B) | ⚠️ Chat template | May need wrapper update |
 
 ## Removed Models & Rationale
+
+### MiniMax M2.1 (Removed 2026-01-05)
+
+**Decision**: ❌ Removed
+
+- 129GB download size - impractical for most users
+- Requires 140GB+ RAM to run
+- Qwen 2.5 Coder provides good coding alternative at 4.4GB
 
 ### Llama 3.x (All variants)
 
@@ -78,26 +91,18 @@ With access to 1000+ GGUF models, we needed to define:
 - Too weak for practical use
 - Gemma 3n E2B (64% MMLU) better choice for constrained environments
 
-### SmolLM2
+### GLM-4 9B
 
-**Decision**: ❌ Removed
+**Decision**: ❌ Not implemented
 
-- Test-only models not suitable for production
-- Was only included for initial development testing
+- GGUF not yet available from reliable sources
+- Will add when community converts it
 
 ### GPT-OSS 120B
 
 **Decision**: ❌ Removed
 
 - Requires 80GB RAM - impractical for most users
-- 20B variant sufficient (82% MMLU, 16GB RAM)
-
-### GLM-4.7 9B
-
-**Decision**: ❌ Removed (for now)
-
-- GGUF not yet available
-- Will add when community converts it
 
 ## Key Decisions
 
@@ -107,25 +112,30 @@ With access to 1000+ GGUF models, we needed to define:
 new LLMEngine({ model: "gemma" }) // → gemma-3n-e4b
 ```
 
-Rationale: Best balance of quality (75% MMLU), speed, and memory (3GB).
+Rationale: Best balance of quality (75% MMLU), speed (18 tok/s), and memory (5GB).
 
 ### 2. Recommended Models by Use Case
 
-| Use Case     | Model           | Why                        |
-| ------------ | --------------- | -------------------------- |
-| Fast         | gemma-3n-e2b    | 2GB RAM, instant responses |
-| Balanced     | gemma-3n-e4b    | Best quality/speed ratio   |
-| Quality      | gemma-3-27b     | 77% MMLU, 128K context     |
-| Edge         | gemma-3n-e2b    | Minimal resources          |
-| Multilingual | qwen-2.5-7b     | Excellent 10+ languages    |
-| Reasoning    | deepseek-r1-14b | Chain-of-thought           |
-| Code         | minimax-m2.1    | 73% SWE-Bench 🏆           |
-| Long Context | gemma-3-27b     | 128K tokens                |
+| Use Case     | Model           | Why                      |
+| ------------ | --------------- | ------------------------ |
+| Fast         | gemma-3n-e2b    | 3GB RAM, 36 tok/s        |
+| Balanced     | gemma-3n-e4b    | Best quality/speed ratio |
+| Quality      | gemma-3-27b     | 77% MMLU, 128K context   |
+| Edge         | gemma-3n-e2b    | Minimal resources        |
+| Multilingual | qwen3-8b        | Excellent 10+ languages  |
+| Reasoning    | deepseek-r1-14b | Chain-of-thought         |
+| Code         | qwen-2.5-coder  | Optimized for code       |
+| Long Context | gemma-3-27b     | 128K tokens              |
 
-### 3. No More "Chinese" Category
+### 3. Thinking Mode Models
 
-Removed special "chinese" recommendation - GLM-4 is multilingual, not Chinese-only. Users in China
-can choose GLM-4 or Qwen based on their needs.
+Qwen3 and DeepSeek R1 support chain-of-thought reasoning. See [ADR 003](./003-thinking-mode.md) for
+implementation details.
+
+| Model          | Thinking Mode | Default Behavior         |
+| -------------- | ------------- | ------------------------ |
+| Qwen3 \*       | Optional      | Disabled via `/no_think` |
+| DeepSeek R1 \* | Always on     | More tokens allocated    |
 
 ### 4. Authentication Strategy
 
@@ -143,14 +153,16 @@ Only `bartowski` repos require auth for some models.
 
 ### Positive
 
-- Lean model list (12 models vs 21+)
+- Lean model list (11 working models)
 - Every model serves a clear purpose
 - No redundancy between models
 - Most models work without authentication
+- Thinking-mode models now work correctly
 
 ### Negative
 
 - Users accustomed to Llama/Mistral need to migrate
+- MiniMax fans need to use custom model paths
 - Some niche use cases may need custom model paths
 
 ## Benchmark Sources
@@ -160,3 +172,15 @@ Only `bartowski` repos require auth for some models.
 - Arena ELO: Human preference ratings (Chatbot Arena)
 
 All benchmarks from official model papers and lmsys.org leaderboard.
+
+## Performance Benchmarks (M1 Ultra)
+
+| Model          | Avg tok/s | Notes             |
+| -------------- | --------- | ----------------- |
+| Gemma 3n E2B   | 36        | Fastest 🚀        |
+| Qwen 2.5 Coder | 23        | Code optimized    |
+| Gemma 3n E4B   | 18        | Best balance ⭐   |
+| Qwen3 8B       | 17        | Multilingual      |
+| Phi-4          | 12        | STEM/reasoning    |
+| DeepSeek R1 7B | 9         | Thinks internally |
+| Gemma 3 27B    | 5         | Maximum quality   |
