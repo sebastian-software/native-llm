@@ -3,7 +3,7 @@
   "entryPoints": ["./src/index.ts"],
   "out": "./docs/api",
   "name": "native-llm",
-  "readme": "none",
+  "readme": "./docs/guide.md",
   "excludePrivate": true,
   "excludeInternal": true,
   "includeVersion": true,
