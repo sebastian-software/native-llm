@@ -27,34 +27,15 @@
 
 ## 🎯 Why native-llm?
 
-<table>
-<tr>
-<td width="50%">
+|             | ☁️ Cloud AI              | 🏠 native-llm        |
+| ----------- | ------------------------ | -------------------- |
+| **Cost**    | $0.001 - $0.10 per query | **Free forever**     |
+| **Speed**   | 1-20 seconds             | **< 100ms**          |
+| **Privacy** | Data sent to servers     | **100% local**       |
+| **Limits**  | Rate limits & quotas     | **Unlimited**        |
+| **Offline** | ❌ Requires internet     | ✅ **Works offline** |
 
-### ☁️ Cloud AI
-
-- 💸 Pay per request ($0.001 - $0.10)
-- 🐌 1-20 second latency
-- 📤 Your data leaves your machine
-- 🔒 Rate limits & quotas
-- 🌐 Requires internet
-
-</td>
-<td width="50%">
-
-### 🏠 native-llm
-
-- ✅ **Free forever** — $0/query
-- ⚡ **< 100ms** latency
-- 🔐 **100% private** — data never leaves
-- ♾️ **No limits** — run 24/7
-- 📴 **Works offline**
-
-</td>
-</tr>
-</table>
-
-**The best part?** Local models now achieve **91% of GPT-5's quality** on standard benchmarks.
+**The bottom line:** Local models now achieve **91% of GPT-5's quality** — at zero cost.
 
 ---
 
