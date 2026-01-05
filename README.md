@@ -21,6 +21,32 @@ acceleration on Apple Silicon, CUDA on NVIDIA, and CPU fallback everywhere else.
 - **Streaming**: Real-time token-by-token output
 - **TypeScript**: Full type definitions included
 
+## Performance Benchmarks
+
+Tested on **Apple M1 Ultra** with Metal GPU acceleration. Three tasks of increasing complexity:
+
+| Model              | Params | Size   | Load | Simple   | Medium   | Code     | Avg             |
+| ------------------ | ------ | ------ | ---- | -------- | -------- | -------- | --------------- |
+| **Gemma 3n E2B**   | 5B→2B  | 2.8 GB | 2.1s | 18 tok/s | 34 tok/s | 36 tok/s | **36 tok/s** 🚀 |
+| **Qwen 2.5 Coder** | 7B     | 4.4 GB | 3.5s | 5 tok/s  | 20 tok/s | 24 tok/s | **23 tok/s**    |
+| **Gemma 3n E4B**   | 8B→4B  | 4.2 GB | 3.0s | 10 tok/s | 26 tok/s | 18 tok/s | **18 tok/s** ⭐ |
+| **Qwen3 8B**       | 8B     | 4.7 GB | 4.0s | 5 tok/s  | 12 tok/s | 19 tok/s | **17 tok/s**    |
+| **Phi-4**          | 14B    | 8.4 GB | 6.5s | 1 tok/s  | 12 tok/s | 13 tok/s | **12 tok/s**    |
+| **DeepSeek R1 7B** | 7B     | 4.4 GB | 2.4s | 3 tok/s  | 8 tok/s  | 10 tok/s | **9 tok/s** 🧠  |
+| **Gemma 3 27B**    | 27B    | 16 GB  | 154s | 2 tok/s  | 5 tok/s  | 5 tok/s  | **5 tok/s**     |
+
+**Tasks**: Simple = quick math, Medium = concept explanation, Code = TypeScript function
+
+> 💡 **Recommendation**: Start with **Gemma 3n E4B** for the best quality/speed balance. Use **E2B**
+> for maximum speed, **Qwen3** for multilingual, or **DeepSeek R1** for complex reasoning tasks.
+
+Run your own benchmarks:
+
+```bash
+pnpm benchmark                    # Test default models
+pnpm benchmark gemma-3n-e4b phi-4 # Test specific models
+```
+
 ## Model Comparison
 
 ### Cloud Services (Reference)
@@ -34,28 +60,23 @@ acceleration on Apple Silicon, CUDA on NVIDIA, and CPU fallback everywhere else.
 
 ### Top Local Models (Recommended)
 
-| Model               | Params     | Context | RAM   | MMLU    | SWE     | Best For                |
-| ------------------- | ---------- | ------- | ----- | ------- | ------- | ----------------------- |
-| **MiniMax M2.1**    | 45B (10B)  | 128K    | ~12GB | 82%     | **73%** | Coding champion 🏆      |
-| **Phi-4**           | 14B        | 16K     | ~9GB  | **84%** | 38%     | STEM/reasoning 🧠       |
-| **DeepSeek R1 14B** | 14B        | 128K    | ~9GB  | 79%     | 48%     | Chain-of-thought        |
-| **Gemma 3 27B**     | 27B        | 128K    | ~18GB | 77%     | 45%     | Maximum quality         |
-| **Gemma 3n E4B**    | 8B→4B      | 32K     | ~3GB  | 75%     | 32%     | Best balance ⭐         |
-| **Gemma 3n E2B**    | 5B→2B      | 32K     | ~2GB  | 64%     | 25%     | Edge/mobile             |
-| **Qwen3 4B**        | 4B         | 32K     | ~3GB  | 76%     | 35%     | Thinking mode 🧠        |
-| **Qwen3 8B**        | 8B         | 32K     | ~5GB  | 81%     | 42%     | Multilingual + thinking |
-| **Qwen3 14B**       | 14B        | 32K     | ~9GB  | 84%     | 48%     | Top multilingual 🌍     |
-| **GPT-OSS 20B**     | 21B (3.6B) | 128K    | ~16GB | 82%     | 48%     | OpenAI open 🆕          |
+| Model               | Params | Context | RAM   | MMLU    | Best For           |
+| ------------------- | ------ | ------- | ----- | ------- | ------------------ |
+| **Phi-4**           | 14B    | 16K     | ~9GB  | **84%** | STEM/reasoning 🧠  |
+| **Gemma 3 27B**     | 27B    | 128K    | ~18GB | 77%     | Maximum quality    |
+| **Gemma 3n E4B**    | 8B→4B  | 32K     | ~5GB  | 75%     | Best balance ⭐    |
+| **Gemma 3n E2B**    | 5B→2B  | 32K     | ~3GB  | 64%     | Edge/mobile        |
+| **Qwen 2.5 Coder**  | 7B     | 128K    | ~5GB  | 66%     | Code generation 💻 |
+| **DeepSeek R1 14B** | 14B    | 128K    | ~9GB  | 79%     | Chain-of-thought   |
 
 ### Key Insights
 
-| Metric         | Best Local        | Best Cloud      | Local/Cloud  |
-| -------------- | ----------------- | --------------- | ------------ |
-| **MMLU**       | Phi-4: 84%        | GPT-5.2: 92%    | **91%**      |
-| **SWE-Bench**  | MiniMax M2.1: 73% | Claude 4.5: 82% | **89%** 🔥   |
-| **Cost/query** | **$0**            | $0.001-0.10     | **∞ better** |
-| **Latency**    | **<100ms**        | 1-20s           | **10-100x**  |
-| **Privacy**    | **100% local**    | Data sent       | **∞ better** |
+| Metric         | Best Local     | Best Cloud   | Local/Cloud  |
+| -------------- | -------------- | ------------ | ------------ |
+| **MMLU**       | Phi-4: 84%     | GPT-5.2: 92% | **91%**      |
+| **Cost/query** | **$0**         | $0.001-0.10  | **∞ better** |
+| **Latency**    | **<100ms**     | 1-20s        | **10-100x**  |
+| **Privacy**    | **100% local** | Data sent    | **∞ better** |
 
 **Benchmarks**: MMLU = general knowledge, GPQA = PhD-level science, SWE = coding tasks, Arena =
 human preference
@@ -165,7 +186,6 @@ new LLMEngine({ model: "gemma-large" }) // → gemma-3-27b
 new LLMEngine({ model: "qwen" }) // → qwen3-8b
 new LLMEngine({ model: "qwen-coder" }) // → qwen-2.5-coder-7b
 new LLMEngine({ model: "deepseek" }) // → deepseek-r1-7b
-new LLMEngine({ model: "minimax" }) // → minimax-m2.1
 new LLMEngine({ model: "phi" }) // → phi-4
 new LLMEngine({ model: "gpt-oss" }) // → gpt-oss-20b
 ```
@@ -175,13 +195,13 @@ new LLMEngine({ model: "gpt-oss" }) // → gpt-oss-20b
 ```typescript
 import { RECOMMENDED_MODELS } from "native-llm"
 
-RECOMMENDED_MODELS.fast // gemma-3n-e2b (~2GB)
-RECOMMENDED_MODELS.balanced // gemma-3n-e4b (~3GB) ⭐
+RECOMMENDED_MODELS.fast // gemma-3n-e2b (~3GB)
+RECOMMENDED_MODELS.balanced // gemma-3n-e4b (~5GB) ⭐
 RECOMMENDED_MODELS.quality // gemma-3-27b (~18GB)
-RECOMMENDED_MODELS.edge // gemma-3n-e2b (~2GB)
+RECOMMENDED_MODELS.edge // gemma-3n-e2b (~3GB)
 RECOMMENDED_MODELS.multilingual // qwen3-8b (~5GB)
 RECOMMENDED_MODELS.reasoning // deepseek-r1-14b (~9GB)
-RECOMMENDED_MODELS.code // minimax-m2.1 (~12GB) 🏆
+RECOMMENDED_MODELS.code // qwen-2.5-coder-7b (~5GB)
 RECOMMENDED_MODELS.longContext // gemma-3-27b (128K)
 ```
 
@@ -208,6 +228,22 @@ new LLMEngine({ model: "gemma-3n-e4b", gpuLayers: 0 })
 
 // Partial GPU offload (for large models)
 new LLMEngine({ model: "gemma-3-27b", gpuLayers: 40 })
+```
+
+### Thinking Mode (Qwen3, DeepSeek R1)
+
+Some models support chain-of-thought reasoning. By default, thinking is disabled for faster
+responses:
+
+```typescript
+// Default: Fast responses without visible thinking
+new LLMEngine({ model: "qwen3-8b" })
+
+// Enable thinking for complex reasoning tasks
+new LLMEngine({ model: "qwen3-8b", enableThinking: true })
+
+// DeepSeek R1 always "thinks" internally (needs more tokens)
+new LLMEngine({ model: "deepseek-r1-7b" }) // Auto-adjusts token limits
 ```
 
 ## API Reference
@@ -238,6 +274,7 @@ interface EngineOptions {
   gpuLayers?: number // GPU layers (-1 = all)
   contextSize?: number // Context override
   huggingFaceToken?: string // For gated models
+  enableThinking?: boolean // Enable chain-of-thought (Qwen3, DeepSeek)
 }
 
 interface GenerateOptions {

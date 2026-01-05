@@ -98,7 +98,7 @@ export const MODELS = {
 
   // ============================================
   // Qwen3 - Latest generation with thinking mode
-  // Supports /think and /no_think for reasoning control
+  // Use enableThinking: true to see chain-of-thought reasoning
   // ============================================
   "qwen3-4b": {
     name: "Qwen3 4B",
@@ -109,6 +109,7 @@ export const MODELS = {
     contextLength: 32768,
     languages: ["en", "zh", "de", "fr", "es", "pt", "it", "nl", "pl", "ru", "ja", "ko"],
     description: "Thinking mode, 100+ languages, ~3GB RAM",
+    thinkingMode: "qwen", // Supports /no_think prefix
     benchmarks: { mmlu: 76, arena: 1300 }
   },
   "qwen3-8b": {
@@ -120,6 +121,7 @@ export const MODELS = {
     contextLength: 32768,
     languages: ["en", "zh", "de", "fr", "es", "pt", "it", "nl", "pl", "ru", "ja", "ko"],
     description: "Thinking mode, excellent multilingual, ~5GB RAM",
+    thinkingMode: "qwen",
     benchmarks: { mmlu: 81, arena: 1350 }
   },
   "qwen3-14b": {
@@ -131,6 +133,7 @@ export const MODELS = {
     contextLength: 32768,
     languages: ["en", "zh", "de", "fr", "es", "pt", "it", "nl", "pl", "ru", "ja", "ko"],
     description: "Thinking mode, top multilingual, ~9GB RAM",
+    thinkingMode: "qwen",
     benchmarks: { mmlu: 84, arena: 1380 }
   },
   "qwen-2.5-coder-7b": {
@@ -147,6 +150,7 @@ export const MODELS = {
 
   // ============================================
   // DeepSeek R1 - Reasoning specialists (chain-of-thought)
+  // These models always think before answering - needs more tokens
   // ============================================
   "deepseek-r1-7b": {
     name: "DeepSeek R1 Distill 7B",
@@ -157,6 +161,7 @@ export const MODELS = {
     contextLength: 131072,
     languages: ["en", "zh"],
     description: "Strong reasoning with chain-of-thought",
+    thinkingMode: "deepseek", // Always thinks, needs more tokens
     benchmarks: { mmlu: 72, arena: 1300 }
   },
   "deepseek-r1-14b": {
@@ -168,22 +173,8 @@ export const MODELS = {
     contextLength: 131072,
     languages: ["en", "zh"],
     description: "Best reasoning model, shows thinking",
+    thinkingMode: "deepseek",
     benchmarks: { mmlu: 79, arena: 1350 }
-  },
-
-  // ============================================
-  // MiniMax M2.1 - Coding champion (MoE)
-  // ============================================
-  "minimax-m2.1": {
-    name: "MiniMax M2.1",
-    repo: "mradermacher/MiniMax-M2.1-GGUF",
-    file: "MiniMax-M2.1.Q4_K_M.gguf",
-    parameters: "~45B (10B active)",
-    quantization: "Q4_K_M",
-    contextLength: 131072,
-    languages: ["en", "zh", "de", "fr", "es", "ja", "ko"],
-    description: "Top coding model, beats Claude 4.5 on SWE-Bench",
-    benchmarks: { mmlu: 82, arena: 1370 }
   }
 } as const
 
@@ -210,10 +201,7 @@ export const MODEL_ALIASES: Record<string, ModelId> = {
   "qwen-coder": "qwen-2.5-coder-7b",
 
   // DeepSeek
-  deepseek: "deepseek-r1-7b",
-
-  // MiniMax
-  minimax: "minimax-m2.1"
+  deepseek: "deepseek-r1-7b"
 }
 
 /**
@@ -232,8 +220,8 @@ export const RECOMMENDED_MODELS = {
   multilingual: "qwen3-8b",
   /** Complex reasoning (chain-of-thought) */
   reasoning: "deepseek-r1-14b",
-  /** Code generation - best local SWE-Bench */
-  code: "minimax-m2.1",
+  /** Code generation */
+  code: "qwen-2.5-coder-7b",
   /** Long documents (128K context) */
   longContext: "gemma-3-27b"
 } as const
@@ -256,6 +244,13 @@ export interface EngineOptions {
    * Can also be set via HF_TOKEN environment variable
    */
   huggingFaceToken?: string
+
+  /**
+   * Enable thinking/reasoning mode for models that support it (Qwen3, DeepSeek R1)
+   * - When false (default): Disables thinking for faster responses
+   * - When true: Shows chain-of-thought reasoning (slower but more detailed)
+   */
+  enableThinking?: boolean
 }
 
 /**

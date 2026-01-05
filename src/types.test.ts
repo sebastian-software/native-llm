@@ -48,7 +48,6 @@ describe("MODEL_ALIASES", () => {
     expect(MODEL_ALIASES.qwen).toBeDefined()
     expect(MODEL_ALIASES.phi).toBeDefined()
     expect(MODEL_ALIASES.deepseek).toBeDefined()
-    expect(MODEL_ALIASES.minimax).toBeDefined()
   })
 })
 

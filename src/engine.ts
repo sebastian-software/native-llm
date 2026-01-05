@@ -34,6 +34,7 @@ export class LLMEngine {
   private readonly gpuLayers: number
   private readonly contextSize?: number
   private readonly hfToken?: string
+  private readonly enableThinking: boolean
 
   private llama: Llama | null = null
   private model: LlamaModel | null = null
@@ -54,6 +55,7 @@ export class LLMEngine {
 
     this.gpuLayers = options.gpuLayers ?? -1 // -1 = all layers on GPU
     this.contextSize = options.contextSize
+    this.enableThinking = options.enableThinking ?? false
     // Use provided token or fall back to environment variable
     this.hfToken = options.huggingFaceToken ?? process.env.HF_TOKEN
   }
@@ -75,6 +77,48 @@ export class LLMEngine {
     }
     // Assume it's already a path or URL
     return this.modelId
+  }
+
+  /**
+   * Get the thinking mode for the current model
+   */
+  private getThinkingMode(): "qwen" | "deepseek" | undefined {
+    if (this.modelId in MODELS) {
+      const info = MODELS[this.modelId as ModelId]
+      return (info as { thinkingMode?: "qwen" | "deepseek" }).thinkingMode
+    }
+    return undefined
+  }
+
+  /**
+   * Prepare prompt for thinking-mode models
+   * - Qwen3: Add /no_think prefix when thinking is disabled
+   * - DeepSeek: No modification needed (always thinks)
+   */
+  private preparePrompt(prompt: string): string {
+    const thinkingMode = this.getThinkingMode()
+
+    if (thinkingMode === "qwen" && !this.enableThinking) {
+      // Disable thinking mode for Qwen3 by adding /no_think prefix
+      return `/no_think ${prompt}`
+    }
+
+    return prompt
+  }
+
+  /**
+   * Get appropriate max tokens for the model
+   * DeepSeek models need more tokens because they think first
+   */
+  private getDefaultMaxTokens(): number {
+    const thinkingMode = this.getThinkingMode()
+
+    if (thinkingMode === "deepseek") {
+      // DeepSeek needs more tokens for thinking + response
+      return 512
+    }
+
+    return 256
   }
 
   /**
@@ -138,8 +182,8 @@ export class LLMEngine {
     const startTime = Date.now()
     let generatedTokens = 0
 
-    // Build the prompt
-    const prompt = options.prompt
+    // Prepare prompt for thinking-mode models
+    const prompt = this.preparePrompt(options.prompt)
     if (options.systemPrompt) {
       // For chat session, we'll use the system prompt in the first message
       this.session.setChatHistory([{ type: "system", text: options.systemPrompt }])
@@ -147,7 +191,7 @@ export class LLMEngine {
 
     // Generate response
     const response = await this.session.prompt(prompt, {
-      maxTokens: options.maxTokens ?? 256,
+      maxTokens: options.maxTokens ?? this.getDefaultMaxTokens(),
       temperature: options.temperature ?? 0.7,
       topP: options.topP ?? 0.9,
       topK: options.topK ?? 40,
@@ -192,15 +236,15 @@ export class LLMEngine {
     const startTime = Date.now()
     let generatedTokens = 0
 
-    // Build the prompt
-    const prompt = options.prompt
+    // Prepare prompt for thinking-mode models
+    const prompt = this.preparePrompt(options.prompt)
     if (options.systemPrompt) {
       this.session.setChatHistory([{ type: "system", text: options.systemPrompt }])
     }
 
     // Generate response with streaming
     const response = await this.session.prompt(prompt, {
-      maxTokens: options.maxTokens ?? 256,
+      maxTokens: options.maxTokens ?? this.getDefaultMaxTokens(),
       temperature: options.temperature ?? 0.7,
       topP: options.topP ?? 0.9,
       topK: options.topK ?? 40,

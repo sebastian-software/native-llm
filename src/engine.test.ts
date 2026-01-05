@@ -324,9 +324,9 @@ describe("Model resolution", () => {
     expect(info).toEqual(MODELS["phi-4"])
   })
 
-  it("should have minimax alias point to minimax-m2.1", () => {
-    const engine = new LLMEngine({ model: "minimax" })
+  it("should have qwen-coder alias point to qwen-2.5-coder-7b", () => {
+    const engine = new LLMEngine({ model: "qwen-coder" })
     const info = engine.getModelInfo()
-    expect(info).toEqual(MODELS["minimax-m2.1"])
+    expect(info).toEqual(MODELS["qwen-2.5-coder-7b"])
   })
 })

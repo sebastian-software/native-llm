@@ -34,14 +34,14 @@ const TASKS: BenchmarkTask[] = [
     name: "Quick Math",
     complexity: "simple",
     prompt: "What is 17 * 24? Reply with just the number.",
-    maxTokens: 20,
+    maxTokens: 50, // Extra tokens for thinking models
     description: "Simple arithmetic, minimal output"
   },
   {
     name: "Concept Explanation",
     complexity: "medium",
     prompt: "Explain how a hash table works in 2-3 sentences. Be concise but accurate.",
-    maxTokens: 100,
+    maxTokens: 200, // Extra tokens for thinking models
     description: "Technical explanation, moderate output"
   },
   {
@@ -49,27 +49,36 @@ const TASKS: BenchmarkTask[] = [
     complexity: "complex",
     prompt: `Write a TypeScript function that implements binary search on a sorted array. Include JSDoc comments.`,
     systemPrompt: "You are an expert TypeScript developer. Write clean, typed code.",
-    maxTokens: 300,
+    maxTokens: 500, // Extra tokens for thinking models
     description: "Code generation with documentation"
   }
 ]
 
-// Models to benchmark by default (good variety of sizes)
+// Models that need extra tokens because they "think" internally
+const THINKING_MODELS = ["deepseek-r1-7b", "deepseek-r1-14b"]
+
+function getMaxTokensForModel(modelId: string, baseTokens: number): number {
+  if (THINKING_MODELS.includes(modelId)) {
+    // DeepSeek needs ~3x tokens: thinking + response
+    return baseTokens * 3
+  }
+  return baseTokens
+}
+
+// Models to benchmark by default (verified working)
 const DEFAULT_MODELS: ModelId[] = [
-  "gemma-3n-e2b", // ~2GB - Edge
-  "gemma-3n-e4b", // ~3GB - Balanced
-  "deepseek-r1-7b", // ~5GB - Reasoning
-  "phi-4", // ~9GB - STEM
-  "qwen-2.5-coder-7b" // ~5GB - Code optimized
+  "gemma-3n-e2b", // ~2.8GB - Fastest
+  "gemma-3n-e4b", // ~4.2GB - Best balance
+  "qwen-2.5-coder-7b", // ~4.4GB - Code optimized
+  "qwen3-8b", // ~4.7GB - Multilingual + thinking
+  "phi-4" // ~8.4GB - STEM/reasoning
 ]
 
 // Full benchmark includes larger models
 const ALL_MODELS: ModelId[] = [
   ...DEFAULT_MODELS,
-  "deepseek-r1-14b", // ~9GB - Best reasoning
-  "minimax-m2.1", // ~12GB - Coding champion
-  "gemma-3-27b" // ~18GB - Maximum quality
-  // Note: qwen3-* and gpt-oss excluded due to chat template issues
+  "deepseek-r1-7b", // ~4.4GB - Reasoning (needs more tokens)
+  "gemma-3-27b" // ~16GB - Maximum quality (slow to load)
 ]
 
 // ============================================
@@ -133,7 +142,7 @@ async function benchmarkModel(modelId: ModelId): Promise<ModelResult | null> {
       const result = await engine.generate({
         prompt: task.prompt,
         systemPrompt: task.systemPrompt,
-        maxTokens: task.maxTokens,
+        maxTokens: getMaxTokensForModel(modelId, task.maxTokens),
         temperature: 0.3 // Lower for more consistent benchmarks
       })
 
